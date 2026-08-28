@@ -6,8 +6,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 192.168.1.4:23000/stephanvanlanduyt/kluster.git
-    targetRevision: main
+    repoURL: ssh://git@192.168.1.4:222/stephanvanlanduyt/kluster.git
+    targetRevision: master
     path: apps/spotify/manifests
   destination:
     server: https://kubernetes.default.svc

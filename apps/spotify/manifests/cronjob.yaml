@@ -4,7 +4,7 @@ metadata:
   name: spotify-notifier
   namespace: spotify
 spec:
-  schedule: "0 21 * * 0"
+  schedule: "30 20 * * 0"
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
@@ -24,6 +24,13 @@ spec:
                 name: spotify-notifier-config
             - secretRef:
                 name: spotify-notifier-secrets
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                cpu: 500m
+                memory: 512Mi
             volumeMounts:
             - name: app-data
               mountPath: /data

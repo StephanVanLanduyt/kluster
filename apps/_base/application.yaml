@@ -6,8 +6,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/your-user/homelab-gitops.git
-    targetRevision: main
+    repoURL: ssh://git@192.168.1.4:222/stephanvanlanduyt/kluster.git
+    targetRevision: master
     path: apps/homepage/manifests
   destination:
     server: https://kubernetes.default.svc
