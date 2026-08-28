@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: spotify-notifier
+  namespace: spotify
+spec:
+  schedule: "0 21 * * 0"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: spotify-notifier
+        spec:
+          nodeSelector:
+            node-role.kubernetes.io/primary-storage: "true"
+          containers:
+          - name: spotify-notifier
+            image: 192.168.1.4:23000/stephanvanlanduyt/spotify:1.0.20260824
+            imagePullPolicy: Always
+            envFrom:
+            - configMapRef:
+                name: spotify-notifier-config
+            - secretRef:
+                name: spotify-notifier-secrets
+            volumeMounts:
+            - name: app-data
+              mountPath: /data
+          volumes:
+          - name: app-data
+            persistentVolumeClaim:
+              claimName: app-data-pvc
+          restartPolicy: OnFailure
