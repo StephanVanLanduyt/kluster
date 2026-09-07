@@ -1,0 +1,6 @@
+apiVersion: viaduct.ai/v1
+kind: ksops
+metadata:
+  name: app-secrets
+files:
+  - ./secrets.enc.yaml

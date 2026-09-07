@@ -3,10 +3,11 @@ kind: Kustomization
 
 resources:
   - namespace.yaml
-  - secrets.enc.yaml
   - pvc.yaml
   - cronjob.yaml
-  - secrets.enc.yaml
+
+generators:
+  - ksops-generator.yaml
 
 # Generates a ConfigMap for non-sensitive data
 configMapGenerator:

@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-repo-server
+spec:
+  template:
+    spec:
+      volumes:
+        - name: var-files
+          emptyDir: {}
+        - name: plugins
+          emptyDir: {}
+        - name: cmp-tmp
+          emptyDir: {}
+        - name: ksops-cmp-plugin
+          configMap:
+            name: ksops-cmp-plugin
+        - name: sops-age
+          secret:
+            secretName: sops-age
+            items:
+              - key: keys.txt
+                path: keys.txt
+
+      containers:
+        - name: ksops
+          image: viaductoss/ksops:v4.5.1
+          imagePullPolicy: IfNotPresent
+          command:
+            - /var/run/argocd/argocd-cmp-server
+
+          env:
+            - name: KUSTOMIZE_PLUGIN_HOME
+              value: /home/argocd/.config/kustomize/plugin
+            - name: XDG_CONFIG_HOME
+              value: /.config
+
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 999
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
+          volumeMounts:
+            - name: var-files
+              mountPath: /var/run/argocd
+            - name: plugins
+              mountPath: /home/argocd/cmp-server/plugins
+            - name: ksops-cmp-plugin
+              mountPath: /home/argocd/cmp-server/config/plugin.yaml
+              subPath: plugin.yaml
+              readOnly: true
+            - name: sops-age
+              mountPath: /home/argocd/.config/sops/age
+              readOnly: true
+            - name: cmp-tmp
+              mountPath: /tmp
