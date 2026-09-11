@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cocktails-frontend
+  namespace: cocktails
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cocktails-frontend
+  template:
+    metadata:
+      labels:
+        app: cocktails-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: 192.168.1.4:23000/stephanvanlanduyt/cocktails-frontend:1.0.20260716@sha256:5664d2e7a996bc3b0901b94b17df4e515d5fdc38e5261c1f7bc6774864ee06cb
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cocktails-frontend
+  namespace: cocktails
+spec:
+  selector:
+    app: cocktails-frontend
+  ports:
+    - port: 80
+      targetPort: 80
