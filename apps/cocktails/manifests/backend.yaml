@@ -55,7 +55,3 @@ spec:
   ports:
     - port: 8080
       targetPort: 8080
-  template:
-    spec:
-      containers:
-        - image: 192.168.1.4:23000/stephanvanlanduyt/cocktails-backend:1.0.20260911
