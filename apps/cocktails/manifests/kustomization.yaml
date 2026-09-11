@@ -8,6 +8,9 @@ resources:
   - sealed-secrets.yaml
   - pvc.yaml
   - db.yaml
+  - db-svc.yaml
   - backend.yaml
+  - backend-svc.yaml
   - frontend.yaml
+  - frontend-svc.yaml
   - ingress.yaml

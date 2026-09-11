@@ -25,19 +25,3 @@ spec:
             limits:
               cpu: 100m
               memory: 128Mi
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: cocktails-frontend
-  namespace: cocktails
-spec:
-  selector:
-    app: cocktails-frontend
-  ports:
-    - port: 80
-      targetPort: 80
-  template:
-    spec:
-      containers:
-        - image: 192.168.1.4:23000/stephanvanlanduyt/cocktails-frontend:1.0.20260911
