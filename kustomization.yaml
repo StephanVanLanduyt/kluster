@@ -3,5 +3,6 @@ kind: Kustomization
 
 resources:
   - cluster/home/root-application.yaml
+  - infrastructure/sealed-secrets
   # - apps/_base
   - apps/spotify
