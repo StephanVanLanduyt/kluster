@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: 192.168.1.4:23000/stephanvanlanduyt/cocktails-frontend:1.0.20260716@sha256:5664d2e7a996bc3b0901b94b17df4e515d5fdc38e5261c1f7bc6774864ee06cb
+          image: 192.168.1.4:23000/stephanvanlanduyt/cocktails-frontend:1.0.20260911
           ports:
             - containerPort: 80
           resources:
@@ -49,3 +49,7 @@ spec:
         spec:
           containers:
             - image: 192.168.1.4:23000/stephanvanlanduyt/cocktails-frontend:1.0.20260911
+  template:
+    spec:
+      containers:
+        - image: 192.168.1.4:23000/stephanvanlanduyt/cocktails-frontend:1.0.20260911
