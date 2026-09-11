@@ -16,26 +16,26 @@ spec:
           nodeSelector:
             node-role.kubernetes.io/primary-storage: "true"
           containers:
-          - name: spotify-notifier
-            image: 192.168.1.4:23000/stephanvanlanduyt/spotify:1.0.20260824
-            imagePullPolicy: Always
-            envFrom:
-            - configMapRef:
-                name: spotify-notifier-config
-            - secretRef:
-                name: spotify-notifier-secrets
-            resources:
-              requests:
-                cpu: 50m
-                memory: 128Mi
-              limits:
-                cpu: 500m
-                memory: 512Mi
-            volumeMounts:
-            - name: app-data
-              mountPath: /data
+            - name: spotify-notifier
+              image: 192.168.1.4:23000/stephanvanlanduyt/spotify:1.0.20260911
+              imagePullPolicy: Always
+              envFrom:
+                - configMapRef:
+                    name: spotify-notifier-config
+                - secretRef:
+                    name: spotify-notifier-secrets
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 128Mi
+                limits:
+                  cpu: 500m
+                  memory: 512Mi
+              volumeMounts:
+                - name: app-data
+                  mountPath: /data
           volumes:
-          - name: app-data
-            persistentVolumeClaim:
-              claimName: app-data-pvc
+            - name: app-data
+              persistentVolumeClaim:
+                claimName: app-data-pvc
           restartPolicy: OnFailure
