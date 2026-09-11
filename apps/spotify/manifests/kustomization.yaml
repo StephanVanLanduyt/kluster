@@ -3,10 +3,9 @@ kind: Kustomization
 
 resources:
   - namespace.yaml
-  - secrets.enc.yaml
   - pvc.yaml
   - cronjob.yaml
-  - secrets.enc.yaml
+  - sealed-secrets.yaml
 
 # Generates a ConfigMap for non-sensitive data
 configMapGenerator:
