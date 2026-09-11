@@ -6,3 +6,4 @@ resources:
   - infrastructure/sealed-secrets
   # - apps/_base
   - apps/spotify
+  - apps/cocktails
