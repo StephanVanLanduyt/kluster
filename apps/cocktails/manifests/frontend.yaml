@@ -25,6 +25,12 @@ spec:
             limits:
               cpu: 100m
               memory: 128Mi
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - image: 192.168.1.4:23000/stephanvanlanduyt/cocktails-frontend:1.0.20260911
 ---
 apiVersion: v1
 kind: Service
@@ -37,3 +43,9 @@ spec:
   ports:
     - port: 80
       targetPort: 80
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - image: 192.168.1.4:23000/stephanvanlanduyt/cocktails-frontend:1.0.20260911
