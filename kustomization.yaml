@@ -7,3 +7,4 @@ resources:
   # - apps/_base
   - apps/spotify
   - apps/cocktails
+  - apps/databasus
