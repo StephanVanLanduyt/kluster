@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: databasus-sftp
+  namespace: databasus
+  labels:
+    app.kubernetes.io/name: databasus-sftp
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: databasus-sftp
+  ports:
+    - name: sftp
+      port: 22
+      targetPort: 2222
+      protocol: TCP

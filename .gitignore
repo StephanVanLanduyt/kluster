@@ -3,3 +3,8 @@
 !*.enc
 !.env.example
 secrets.yaml
+*secrets.yaml
+secret.yaml
+*secret.yaml
+!*sealed-secrets.yaml
+!*sealed-secret.yaml

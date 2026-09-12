@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: databasus-sftp
+  namespace: databasus
+  labels:
+    app.kubernetes.io/name: databasus-sftp
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: databasus-sftp
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: databasus-sftp
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: maxwell
+      containers:
+        - name: sftp
+          image: lscr.io/linuxserver/openssh-server:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: USER_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: databasus-sftp-secrets
+                  key: username
+            - name: USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: databasus-sftp-secrets
+                  key: password
+            - name: PASSWORD_ACCESS
+              value: "true"
+            - name: SUDO_ACCESS
+              value: "false"
+          ports:
+            - name: ssh
+              containerPort: 2222
+              protocol: TCP
+          volumeMounts:
+            - name: sftp-data
+              mountPath: /config
+          readinessProbe:
+            tcpSocket:
+              port: ssh
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: ssh
+            initialDelaySeconds: 20
+            periodSeconds: 20
+      volumes:
+        - name: sftp-data
+          persistentVolumeClaim:
+            claimName: databasus-sftp-data
