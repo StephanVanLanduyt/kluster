@@ -17,7 +17,7 @@ spec:
             node-role.kubernetes.io/primary-storage: "true"
           containers:
             - name: spotify-notifier
-              image: '192.168.1.4:23000/stephanvanlanduyt/spotify:'
+              image: '192.168.1.4:23000/stephanvanlanduyt/spotify:1.0.202609152325'
               imagePullPolicy: Always
               envFrom:
                 - configMapRef:
