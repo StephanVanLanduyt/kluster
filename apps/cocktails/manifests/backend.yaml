@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: '192.168.1.4:23000/stephanvanlanduyt/cocktails-backend:'
+          image: '192.168.1.4:23000/stephanvanlanduyt/cocktails-backend:1.0.202609152326'
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -44,9 +44,3 @@ spec:
                   key: POSTGRES_PASSWORD
             - name: PG_DSN
               value: postgresql+psycopg2://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@cocktails-db:5432/$(POSTGRES_DB)
-  jobTemplate:
-    spec:
-      template:
-        spec:
-          containers:
-            - image: 192.168.1.4:23000/stephanvanlanduyt/cocktails-backend:1.0.202609152326
