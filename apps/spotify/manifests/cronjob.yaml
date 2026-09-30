@@ -4,7 +4,7 @@ metadata:
   name: spotify-notifier
   namespace: spotify
 spec:
-  schedule: "30 20 * * 0"
+  schedule: "0 21 * * 0"
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
