@@ -21,7 +21,7 @@ spec:
         kubernetes.io/hostname: maxwell
       containers:
         - name: sftp
-          image: lscr.io/linuxserver/openssh-server:latest
+          image: lscr.io/linuxserver/openssh-server:version-10.3_p1-r1@sha256:946fa26105e0ec212fdf821b9ddc59aab65f2c2d07c02b25ff0f5001fc332ff0
           imagePullPolicy: IfNotPresent
           env:
             - name: PUID

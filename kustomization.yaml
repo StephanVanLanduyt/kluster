@@ -8,3 +8,4 @@ resources:
   - apps/spotify
   - apps/cocktails
   - apps/databasus
+  - apps/gotify

@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gotify
+  namespace: gotify
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gotify
+  template:
+    metadata:
+      labels:
+        app: gotify
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: newton
+      containers:
+        - name: gotify
+          image: gotify/server:3.1.0@sha256:be44495e4609c6f5b06c01a9445ec6198dba902ce49fc3d0d71ab585cda8014c
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: gotify-config
+          env:
+            - name: GOTIFY_DEFAULTUSER_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: gotify-secrets
+                  key: GOTIFY_DEFAULTUSER_NAME
+            - name: GOTIFY_DEFAULTUSER_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: gotify-secrets
+                  key: GOTIFY_DEFAULTUSER_PASS
+          volumeMounts:
+            - name: gotify-data
+              mountPath: /app/data
+          resources:
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
+      volumes:
+        - name: gotify-data
+          persistentVolumeClaim:
+            claimName: gotify-data-pvc
