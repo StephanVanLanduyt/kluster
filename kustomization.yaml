@@ -10,3 +10,4 @@ resources:
   - apps/databasus
   - apps/gotify
   - apps/uptimekuma
+  - apps/nodered
