@@ -9,3 +9,4 @@ resources:
   - apps/cocktails
   - apps/databasus
   - apps/gotify
+  - apps/uptimekuma
