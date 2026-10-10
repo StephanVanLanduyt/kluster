@@ -11,3 +11,4 @@ resources:
   - apps/gotify
   - apps/uptimekuma
   - apps/nodered
+  - apps/trilium
