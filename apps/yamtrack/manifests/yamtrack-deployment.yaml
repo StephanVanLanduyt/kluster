@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yamtrack
+  namespace: yamtrack
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yamtrack
+  template:
+    metadata:
+      labels:
+        app: yamtrack
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: newton
+      containers:
+        - name: yamtrack
+          image: ghcr.io/fuzzygrim/yamtrack:0.26.3@sha256:78497b454b2b52d3b1062f6fd238351d714cff0895db4369e49ace36f4622e75
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: yamtrack-config
+          env:
+            - name: SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: yamtrack-secrets
+                  key: SECRET
+          volumeMounts:
+            - name: db-storage
+              mountPath: /yamtrack/db
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: yamtrack-data-pvc

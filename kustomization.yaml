@@ -12,3 +12,4 @@ resources:
   - apps/uptimekuma
   - apps/nodered
   - apps/trilium
+  - apps/yamtrack

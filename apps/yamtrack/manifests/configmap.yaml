@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: yamtrack-config
+  namespace: yamtrack
+data:
+  TZ: "Europe/Rome"
+  REDIS_URL: "redis://yamtrack-redis-svc:6379"
+  URLS: "http://yamtrack.newton.local"
+  REGISTRATION: "false"
