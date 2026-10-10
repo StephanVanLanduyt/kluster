@@ -1,0 +1,38 @@
+{		
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",		
+  "extends": ["config:recommended"],		
+  "dependencyDashboard": true,		
+  "dependencyDashboardTitle": "Renovate Dashboard",		
+  "assignees": ["StephanVanLanduyt"],		
+  "labels": ["renovate"],		
+  "configMigration": true,		
+  "prHourlyLimit": 0,
+  "packageRules": [
+    {
+      "matchManagers": ["html", "cdnurl"],
+      "enabled": false
+    },
+    {
+      "matchManagers": ["pip_requirements", "poetry", "pipenv", "pip_setup"],
+      "enabled": false
+    },
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "matchCurrentVersion": "!/^0/",
+      "automerge": true
+    },
+    {
+      "matchPackageNames": "postgres",
+      "matchCurrentVersion": "15.18",
+      "enabled": false
+    },
+    {
+      "matchPackageNames": "stephanvanlanduyt/coctails",
+      "enabled": false
+    },
+    {
+      "matchPackageNames": "stephanvanlanduyt/spotify",
+      "enabled": false
+    }
+  ]
+}
