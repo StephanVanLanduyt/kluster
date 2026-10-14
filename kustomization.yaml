@@ -13,3 +13,4 @@ resources:
   - apps/nodered
   - apps/trilium
   - apps/yamtrack
+  - apps/filebrowser

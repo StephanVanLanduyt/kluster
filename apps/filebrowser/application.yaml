@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: filebrowser
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: ssh://git@192.168.1.4:222/stephanvanlanduyt/kluster.git
+    targetRevision: master
+    path: apps/filebrowser/manifests
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: filebrowser
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
