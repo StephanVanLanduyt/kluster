@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: syncthing
+  namespace: syncthing
+  labels:
+    app: syncthing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: syncthing
+  template:
+    metadata:
+      labels:
+        app: syncthing
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: newton
+      containers:
+        - name: syncthing
+          image: lscr.io/linuxserver/syncthing:2.1.6@sha256:8a381a5a11225475cc4a14ad4fee7c627fdc4fa5804fe3a34febe3aeda9f4e23
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TZ
+              value: "Europe/Rome"
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+          ports:
+            - containerPort: 8384
+              name: http
+            - containerPort: 22000
+              name: sync-tcp
+              protocol: TCP
+            - containerPort: 22000
+              name: sync-udp
+              protocol: UDP
+            - containerPort: 21027
+              name: discovery
+              protocol: UDP
+          volumeMounts:
+            - name: nfs-shares
+              mountPath: /shares
+            - name: appdata
+              mountPath: /config
+          resources:
+            limits:
+              cpu: "500m"
+              memory: 512Mi
+            requests:
+              cpu: "100m"
+              memory: 128Mi
+      volumes:
+        - name: nfs-shares
+          persistentVolumeClaim:
+            claimName: syncthing-nfs-pvc
+        - name: appdata
+          persistentVolumeClaim:
+            claimName: syncthing-appdata-pvc

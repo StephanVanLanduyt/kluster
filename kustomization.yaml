@@ -14,3 +14,4 @@ resources:
   - apps/trilium
   - apps/yamtrack
   - apps/filebrowser
+  - apps/syncthing
