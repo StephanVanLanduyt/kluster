@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: brave
+  namespace: brave
+  labels:
+    app: brave
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: brave
+  template:
+    metadata:
+      labels:
+        app: brave
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: newton
+      containers:
+        - name: brave
+          image: lscr.io/linuxserver/brave:1.97.56@sha256:7463cbc9a089ab20a302bb6cc6b8f714a00c7fa8f39b8ce1e9c5b9982904a38c
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TZ
+              value: "Europe/Rome"
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+          ports:
+            - containerPort: 3000
+              name: http
+            - containerPort: 3001
+              name: https
+          volumeMounts:
+            - name: appdata
+              mountPath: /config
+            - name: nfs-shares
+              mountPath: /shares
+            - name: dshm
+              mountPath: /dev/shm
+          resources:
+            limits:
+              cpu: 3
+              memory: 4Gi
+            requests:
+              cpu: 1.5
+              memory: 2Gi
+      volumes:
+        - name: appdata
+          persistentVolumeClaim:
+            claimName: brave-appdata-pvc
+        - name: nfs-shares
+          persistentVolumeClaim:
+            claimName: brave-nfs-pvc
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 1Gi
