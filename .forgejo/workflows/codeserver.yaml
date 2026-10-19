@@ -1,0 +1,90 @@
+name: Build & Release Code-Server
+
+on:
+  push:
+    branches: 
+      - master
+    paths:
+      - 'apps/codeserver/Dockerfile'
+      - '.forgejo/workflows/codeserver.yaml'
+
+env:
+  WORKING_DIR: "./apps/codeserver"
+  MANIFEST_PATH: 'apps/codeserver/manifests/deployment.yaml'
+  IMAGE_YAML_PATH: '.spec.template.spec.containers[0].image'
+  REGISTRY_HOST: 192.168.1.4:23000
+  IMAGE_NAME: 192.168.1.4:23000/stephanvanlanduyt/codeserver
+  CLONE_URL: 192.168.1.4:23000/StephanVanLanduyt/kluster.git
+
+jobs:
+  setup:
+    name: Initialize Variables
+    runs-on: docker
+    outputs:
+      image_tag: ${{ steps.vars.outputs.image_tag }}
+    steps:
+      - name: Generate Dynamic Image Tag
+        id: vars
+        run: echo "image_tag=1.0.$(date +%Y%m%d)" >> $GITHUB_OUTPUT
+
+  build:
+    name: Build Docker Image (${{ matrix.arch }})
+    needs: setup
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            runner: docker-amd64
+          - arch: arm64
+            runner: docker-arm64
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      packages: write
+    container:
+      env:
+        DOCKER_HOST: tcp://docker-in-docker:2375
+    steps:
+      - name: Run Build Template
+        uses: http://192.168.1.4:23000/StephanVanLanduyt/pipelines/build-docker@master
+        with:
+          working_directory: ${{ env.WORKING_DIR }}
+          registry_host: ${{ env.REGISTRY_HOST }}
+          image_name: ${{ env.IMAGE_NAME }}
+          image_tag: ${{ needs.setup.outputs.image_tag }}
+          architecture: ${{ matrix.arch }}
+          registry_username: ${{ github.actor }}
+          registry_token: ${{ secrets.REGISTRY_TOKEN }}
+
+  merge-manifest:
+    name: Create and Push Multi-Arch Manifest
+    needs: [setup, build]
+    runs-on: docker
+    container:
+      env:
+        DOCKER_HOST: tcp://docker-in-docker:2375
+    steps:
+      - name: Run Merge Manifest Template
+        uses: http://192.168.1.4:23000/StephanVanLanduyt/pipelines/merge-manifest@master
+        with:
+          registry_host: ${{ env.REGISTRY_HOST }}
+          image_name: ${{ env.IMAGE_NAME }}
+          image_tag: ${{ needs.setup.outputs.image_tag }}
+          architectures: "amd64 arm64"
+          registry_username: ${{ github.actor }}
+          registry_token: ${{ secrets.REGISTRY_TOKEN }}
+
+  update-gitops:
+    name: Update GitOps Manifest
+    needs: [setup, merge-manifest]
+    runs-on: docker
+    steps:
+      - name: Run GitOps Template
+        uses: http://192.168.1.4:23000/StephanVanLanduyt/pipelines/update-gitops@master
+        with:
+          manifest_path: ${{ env.MANIFEST_PATH }}
+          image_yaml_path: ${{ env.IMAGE_YAML_PATH }}
+          image_name: ${{ env.IMAGE_NAME }}
+          new_tag: ${{ needs.setup.outputs.image_tag }}
+          clone_url: ${{ env.CLONE_URL }}
+          git_token: ${{ secrets.GITOPS_PUSH_TOKEN }}

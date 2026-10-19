@@ -16,3 +16,4 @@ resources:
   - apps/filebrowser
   - apps/syncthing
   - apps/brave
+  - apps/codeserver
