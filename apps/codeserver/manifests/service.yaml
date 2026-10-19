@@ -6,7 +6,7 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: code-server
+    app: codeserver
   ports:
   - port: 8443
     targetPort: 8443

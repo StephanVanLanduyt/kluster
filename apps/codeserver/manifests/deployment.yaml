@@ -18,49 +18,49 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: newton
       containers:
-      - name: codeserver
-        image: 192.168.1.4:23000/stephanvanlanduyt/code-server:1.0.20261019
-        ports:
-        - containerPort: 8443
-          name: http
-        env:
-        - name: PUID
-          value: "1000"
-        - name: PGID
-          value: "1000"
-        - name: TZ
-          value: "Europe/Rome"
-        - name: PROXY_DOMAIN
-          value: "codeserver.newton.local"
-        - name: PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: codeserver-secrets
-              key: PASSWORD
-        - name: SUDO_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: codeserver-secrets
-              key: SUDO_PASSWORD
-        - name: SOPS_AGE_KEY_FILE
-          value: "/root/.config/sops/age/keys.txt"
-        volumeMounts:
-        - name: config
-          mountPath: /config
-        - name: sops-keys
-          mountPath: /root/.config/sops/age
-          readOnly: true
-        resources:
-          limits:
-            cpu: "2"
-            memory: 2Gi
-          requests:
-            cpu: 100m
-            memory: 256Mi
+        - name: codeserver
+          image: 192.168.1.4:23000/stephanvanlanduyt/codeserver:1.0.20261019
+          ports:
+            - containerPort: 8443
+              name: http
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Europe/Rome"
+            - name: PROXY_DOMAIN
+              value: "codeserver.newton.local"
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: codeserver-secrets
+                  key: PASSWORD
+            - name: SUDO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: codeserver-secrets
+                  key: SUDO_PASSWORD
+            - name: SOPS_AGE_KEY_FILE
+              value: "/root/.config/sops/age/keys.txt"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: sops-keys
+              mountPath: /root/.config/sops/age
+              readOnly: true
+          resources:
+            limits:
+              cpu: "2"
+              memory: 2Gi
+            requests:
+              cpu: 100m
+              memory: 256Mi
       volumes:
-      - name: config
-        persistentVolumeClaim:
-          claimName: codeserver-appdata-pvc
-      - name: sops-keys
-        secret:
-          secretName: codeserver-sops-keys
+        - name: config
+          persistentVolumeClaim:
+            claimName: codeserver-appdata-pvc
+        - name: sops-keys
+          secret:
+            secretName: codeserver-sops-keys
