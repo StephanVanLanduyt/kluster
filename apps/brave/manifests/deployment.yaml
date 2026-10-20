@@ -43,10 +43,10 @@ spec:
           resources:
             limits:
               cpu: 3
-              memory: 4Gi
+              memory: 6Gi
             requests:
               cpu: 1.5
-              memory: 2Gi
+              memory: 3Gi
       volumes:
         - name: appdata
           persistentVolumeClaim:

@@ -21,6 +21,7 @@ spec:
       containers:
         - name: homepage
           image: 192.168.1.4:23000/stephanvanlanduyt/homepage:1.0.20261020
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 3000
