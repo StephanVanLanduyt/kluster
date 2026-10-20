@@ -17,3 +17,4 @@ resources:
   - apps/syncthing
   - apps/brave
   - apps/codeserver
+  - apps/homepage
