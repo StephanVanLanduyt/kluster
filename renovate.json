@@ -1,12 +1,18 @@
-{		
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",		
-  "extends": ["config:recommended"],		
-  "dependencyDashboard": true,		
-  "dependencyDashboardTitle": "Renovate Dashboard",		
-  "assignees": ["StephanVanLanduyt"],		
-  "labels": ["renovate"],		
-  "configMigration": true,		
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Renovate Dashboard",
+  "assignees": ["StephanVanLanduyt"],
+  "labels": ["renovate"],
+  "configMigration": true,
   "prHourlyLimit": 0,
+  "kubernetes": {
+    "fileMatch": ["(^|/).*deployment\\.yaml$"]
+  },
+  "argocd": {
+    "fileMatch": ["(^|/)application\\.yaml$"]
+  },
   "packageRules": [
     {
       "matchManagers": ["html", "cdnurl"],
