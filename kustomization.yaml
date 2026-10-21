@@ -18,3 +18,4 @@ resources:
   - apps/brave
   - apps/codeserver
   - apps/homepage
+  - apps/monitor

@@ -1,0 +1,172 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitor-kube-prometheus-stack
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    - repoURL: ssh://git@192.168.1.4:222/stephanvanlanduyt/kluster.git
+      targetRevision: master
+      path: apps/monitor/manifests
+    - repoURL: https://prometheus-community.github.io/helm-charts
+      chart: kube-prometheus-stack
+      targetRevision: 92.10.1
+      helm:
+        releaseName: kps
+        valuesObject:
+          crds:
+            enabled: true
+
+          prometheusOperator:
+            admissionWebhooks:
+              enabled: true
+            nodeSelector:
+              kubernetes.io/os: linux
+
+          prometheus:
+            enabled: true
+
+            ingress:
+              enabled: true
+              ingressClassName: traefik
+              annotations:
+                traefik.ingress.kubernetes.io/router.entrypoints: web
+              hosts:
+                - prometheus.newton.local
+              paths:
+                - /
+              pathType: Prefix
+
+            prometheusSpec:
+              externalUrl: http://prometheus.newton.local
+              retention: 10d
+              retentionSize: "18GiB"
+              scrapeInterval: 30s
+              walCompression: true
+
+              nodeSelector:
+                kubernetes.io/os: linux
+                kubernetes.io/hostname: newton
+
+              storageSpec:
+                volumeClaimTemplate:
+                  spec:
+                    storageClassName: local-path
+                    accessModes: ["ReadWriteOnce"]
+                    resources:
+                      requests:
+                        storage: 20Gi
+
+              serviceMonitorSelectorNilUsesHelmValues: false
+              podMonitorSelectorNilUsesHelmValues: false
+              probeSelectorNilUsesHelmValues: false
+              scrapeConfigSelectorNilUsesHelmValues: false
+              ruleSelectorNilUsesHelmValues: false
+
+          alertmanager:
+            enabled: true
+            alertmanagerSpec:
+              nodeSelector:
+                kubernetes.io/os: linux
+                kubernetes.io/hostname: newton
+              storage:
+                volumeClaimTemplate:
+                  spec:
+                    storageClassName: local-path
+                    accessModes: ["ReadWriteOnce"]
+                    resources:
+                      requests:
+                        storage: 2Gi
+
+          grafana:
+            enabled: true
+
+            admin:
+              existingSecret: grafana-admin
+              userKey: admin-user
+              passwordKey: admin-password
+
+            defaultDashboardsEnabled: true
+            defaultDashboardsTimezone: "Europe/Rome"
+
+            deploymentStrategy:
+              type: Recreate
+
+            persistence:
+              enabled: true
+              type: pvc
+              storageClassName: local-path
+              accessModes: ["ReadWriteOnce"]
+              size: 5Gi
+              finalizers:
+                - kubernetes.io/pvc-protection
+
+            nodeSelector:
+              kubernetes.io/os: linux
+              kubernetes.io/hostname: newton
+
+            ingress:
+              enabled: true
+              ingressClassName: traefik
+              annotations:
+                traefik.ingress.kubernetes.io/router.entrypoints: web
+              hosts:
+                - grafana.newton.local
+              path: /
+              pathType: Prefix
+
+            grafana.ini:
+              server:
+                domain: grafana.newton.local
+                root_url: http://grafana.newton.local
+              users:
+                allow_sign_up: false
+              log:
+                level: info
+
+          nodeExporter:
+            enabled: true
+          kubeStateMetrics:
+            enabled: true
+          kubelet:
+            enabled: true
+
+          kubeApiServer:
+            enabled: true
+          coreDns:
+            enabled: true
+          kubeControllerManager:
+            enabled: false
+          kubeScheduler:
+            enabled: false
+          kubeProxy:
+            enabled: false
+          kubeEtcd:
+            enabled: false
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitor
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+      - CreateNamespace=true
+      - ServerSideDiff=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 20s
+        factor: 2
+        maxDuration: 5m
+  ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      jsonPointers: ["/webhooks/0/clientConfig/caBundle"]
+    - group: admissionregistration.k8s.io
+      kind: MutatingWebhookConfiguration
+      jsonPointers: ["/webhooks/0/clientConfig/caBundle"]
