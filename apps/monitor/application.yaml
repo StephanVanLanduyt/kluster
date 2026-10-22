@@ -113,29 +113,45 @@ spec:
                 receiver: "node-red-webhook"
                 routes:
                   - matchers:
+                      - alertname = NodeFilesystemAlmostOutOfSpace
+                      - device = /dev/sda1
+                      - instance = "192.168.1.5:9100"
+                      - mountpoint = /boot
+                    receiver: "null"
+                  - matchers:
                       - alertname = Watchdog
                     receiver: "null"
-            receivers:
-              - name: "null"
-              - name: "node-red-webhook"
-                webhook_configs:
-                  - url: "http://nodered.nodered.svc.cluster.local.:1880/prometheus-webhook"
-                    send_resolved: true
-                    max_alerts: 10
-            inhibit_rules:
-              # Critical silences warning for the same alert
-              - source_matchers:
-                  - severity = critical
-                target_matchers:
-                  - severity = warning
-                equal: ["alertname", "namespace"]
-              # Node down silences all pod alerts on that node
-              - source_matchers:
-                  - alertname = KubeNodeNotReady
-                target_matchers:
-                  - severity =~ warning|info
-                equal: ["node"]
-
+                  - matchers:
+                      - alertname = KubeMemoryOvercommit
+                    receiver: "null"
+                  - matchers:
+                      - alertname = InfoInhibitor
+                    receiver: "null"
+              receivers:
+                - name: "null"
+                - name: "node-red-webhook"
+                  webhook_configs:
+                    - url: "http://nodered.nodered.svc.cluster.local.:1880/prometheus-webhook"
+                      send_resolved: true
+                      max_alerts: 10
+              inhibit_rules:
+                # Critical silences warning for the same alert
+                - source_matchers:
+                    - severity = critical
+                  target_matchers:
+                    - severity =~ warning|info
+                  equal: ["alertname", "namespace"]
+                # Node down silences all pod alerts on that node
+                - source_matchers:
+                    - alertname = KubeNodeNotReady
+                  target_matchers:
+                    - severity =~ warning|info
+                  equal: ["node"]
+                - source_matchers:
+                    - alertname = InfoInhibitor
+                  target_matchers:
+                    - severity = info
+                  equal: ["namespace"]
           additionalPrometheusRulesMap:
             custom-app-rules:
               groups:
@@ -153,17 +169,16 @@ spec:
                       annotations:
                         summary: "Pod {{ $labels.pod }} memory usage above 90% of limit"
                         description: "Container {{ $labels.container }} in pod {{ $labels.pod }} (namespace {{ $labels.namespace }}) is using {{ $value | humanizePercentage }} of its memory limit."
-                - name: test.rules
-                  rules:
-                    - alert: TestAlertPipeline
-                      expr: vector(1)
-                      for: 1m
-                      labels:
-                        severity: warning
-                        team: platform
-                      annotations:
-                        summary: "Test alert — safe to ignore"
-                        description: "This alert validates the notification pipeline. Delete the test-alert PrometheusRule to resolve."
+                # - name: test.rules
+                #   rules:
+                #     - alert: TestAlertPipeline
+                #       expr: vector(1)
+                #       for: 1m
+                #       labels:
+                #         severity: warning
+                #       annotations:
+                #         summary: "Test alert — safe to ignore"
+                #         description: "This alert validates the notification pipeline. Delete the test-alert PrometheusRule to resolve."
 
           grafana:
             enabled: true
@@ -197,7 +212,7 @@ spec:
                 cpu: 100m
                 memory: 128Mi
               limits:
-                cpu: 500m
+                cpu: 750m
                 memory: 256Mi
 
             ingress:
