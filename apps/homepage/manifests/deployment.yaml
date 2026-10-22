@@ -41,37 +41,8 @@ spec:
               cpu: 100m
               memory: 256Mi
           volumeMounts:
-            - mountPath: /app/config/custom.js
+            - mountPath: /app/config
               name: homepage-config
-              subPath: custom.js
-              readOnly: true
-            - mountPath: /app/config/custom.css
-              name: homepage-config
-              subPath: custom.css
-              readOnly: true
-            - mountPath: /app/config/bookmarks.yaml
-              name: homepage-config
-              subPath: bookmarks.yaml
-              readOnly: true
-            - mountPath: /app/config/docker.yaml
-              name: homepage-config
-              subPath: docker.yaml
-              readOnly: true
-            - mountPath: /app/config/kubernetes.yaml
-              name: homepage-config
-              subPath: kubernetes.yaml
-              readOnly: true
-            - mountPath: /app/config/services.yaml
-              name: homepage-config
-              subPath: services.yaml
-              readOnly: true
-            - mountPath: /app/config/settings.yaml
-              name: homepage-config
-              subPath: settings.yaml
-              readOnly: true
-            - mountPath: /app/config/widgets.yaml
-              name: homepage-config
-              subPath: widgets.yaml
               readOnly: true
             - mountPath: /app/config/logs
               name: logs
