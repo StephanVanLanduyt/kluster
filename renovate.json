@@ -8,10 +8,14 @@
   "configMigration": true,
   "prHourlyLimit": 0,
   "kubernetes": {
-    "fileMatch": ["(^|/).*deployment\\.yaml$"]
+    "managerFilePatterns": [
+      "/(^|/).*deployment\\.yaml$/"
+    ]
   },
   "argocd": {
-    "fileMatch": ["(^|/)application\\.yaml$"]
+    "managerFilePatterns": [
+      "/(^|/)application\\.yaml$/"
+    ]
   },
   "packageRules": [
     {
