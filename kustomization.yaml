@@ -19,3 +19,4 @@ resources:
   - apps/codeserver
   - apps/homepage
   - apps/monitor
+  - apps/immich

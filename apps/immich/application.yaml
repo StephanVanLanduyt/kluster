@@ -24,7 +24,7 @@ spec:
               containers:
                 main:
                   image:
-                    tag: v3.3.3
+                    tag: v3.3.5
                   env:
                     TZ: Europe/Rome
                     REDIS_HOSTNAME: '{{ printf "%s-valkey" .Release.Name }}'
