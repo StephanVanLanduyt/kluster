@@ -1,0 +1,118 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: immich
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"        # after namespace, secret, PVCs, Postgres
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    - repoURL: ssh://git@192.168.1.4:222/stephanvanlanduyt/kluster.git
+      targetRevision: master
+      path: apps/immich/manifests
+    - repoURL: ghcr.io/immich-app/immich-charts
+      chart: immich
+      targetRevision: 0.13.4
+      helm:
+        releaseName: immich
+        valuesObject:
+          controllers:
+            main:
+              containers:
+                main:
+                  image:
+                    tag: v3.3.3
+                  env:
+                    TZ: Europe/Rome
+                    REDIS_HOSTNAME: '{{ printf "%s-valkey" .Release.Name }}'
+                    IMMICH_MACHINE_LEARNING_URL: '{{ printf "http://%s-machine-learning:3003" .Release.Name }}'
+                    DB_HOSTNAME: immich-postgres
+                    DB_PORT: "5432"
+                    DB_USERNAME:
+                      valueFrom:
+                        secretKeyRef:
+                          name: immich-postgres
+                          key: username
+                    DB_DATABASE_NAME:
+                      valueFrom:
+                        secretKeyRef:
+                          name: immich-postgres
+                          key: database
+                    DB_PASSWORD:
+                      valueFrom:
+                        secretKeyRef:
+                          name: immich-postgres
+                          key: password
+
+          immich:
+            persistence:
+              library:
+                existingClaim: immich-app-pvc
+            configurationKind: ConfigMap
+
+          valkey:
+            enabled: true
+            persistence:
+              data:
+                enabled: true
+                type: emptyDir
+
+          server:
+            defaultPodOptions:
+              nodeSelector:
+                kubernetes.io/hostname: newton
+            persistence:
+              external-pictures:
+                enabled: true
+                type: persistentVolumeClaim
+                existingClaim: immich-nfs-pvc
+                globalMounts:
+                  - path: /mnt/media/Pictures
+                    readOnly: true
+            ingress:
+              main:
+                enabled: true
+                className: traefik
+                annotations:
+                  traefik.ingress.kubernetes.io/router.entrypoints: web
+                  nginx.ingress.kubernetes.io/proxy-body-size: null
+                hosts:
+                  - host: immich.newton.local
+                    paths:
+                      - path: /
+                        pathType: Prefix
+                        service:
+                          identifier: main
+                tls: []
+
+          machine-learning:
+            defaultPodOptions:
+              nodeSelector:
+                kubernetes.io/hostname: newton
+            persistence:
+              cache:
+                type: persistentVolumeClaim
+                size: 10Gi
+                accessMode: ReadWriteOnce
+                storageClass: local-path
+                retain: true
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: immich
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+      - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 20s
+        factor: 2
+        maxDuration: 5m

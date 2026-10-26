@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: immich-nfs-pvc
+  namespace: immich
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+spec:
+  accessModes:
+    - ReadOnlyMany
+  storageClassName: ""
+  volumeName: immich-nfs-pv
+  resources:
+    requests:
+      storage: 1Ti
