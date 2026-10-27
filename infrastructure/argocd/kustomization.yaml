@@ -6,3 +6,18 @@ resources:
   - https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
   - ingress.yaml
   - sealed-secrets.yaml
+
+patches:
+  - path: cm-user-patch.yaml
+    target:
+      group: ""
+      version: v1
+      kind: ConfigMap
+      name: argocd-cm
+
+  - path: rbac-user-patch.yaml
+    target:
+      group: ""
+      version: v1
+      kind: ConfigMap
+      name: argocd-rbac-cm
