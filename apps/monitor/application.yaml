@@ -125,6 +125,9 @@ spec:
                       - alertname = KubeMemoryOvercommit
                     receiver: "null"
                   - matchers:
+                      - alertname = KubeCPUOvercommit
+                    receiver: "null"
+                  - matchers:
                       - alertname = InfoInhibitor
                     receiver: "null"
               receivers:
