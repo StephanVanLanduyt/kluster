@@ -20,7 +20,7 @@ spec:
       enableServiceLinks: true
       containers:
         - name: homepage
-          image: 192.168.1.4:23000/stephanvanlanduyt/homepage:1.0.20261020
+          image: 192.168.1.4:23000/stephanvanlanduyt/homepage:1.0.20261027
           imagePullPolicy: Always
           ports:
             - name: http
