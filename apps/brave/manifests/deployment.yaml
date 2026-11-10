@@ -19,7 +19,7 @@ spec:
         kubernetes.io/hostname: newton
       containers:
         - name: brave
-          image: lscr.io/linuxserver/brave:1.99.55@sha256:a3883e0a7919ac030689862ef5261b8b6d5aa42ec232479525bbca708b890a4d
+          image: lscr.io/linuxserver/brave:1.99.56@sha256:1db540c99996519f259cda767c41a73ccc575bf324a58e93fb1d10b23c060ecc
           imagePullPolicy: IfNotPresent
           env:
             - name: TZ
