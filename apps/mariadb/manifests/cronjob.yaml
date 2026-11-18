@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mariadb-backup
+  namespace: mariadb
+spec:
+  schedule: "0 3 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          nodeSelector:
+            kubernetes.io/hostname: newton
+          securityContext:
+            fsGroup: 999
+          containers:
+            - name: dump
+              image: mariadb:11.8.9@sha256:d36f18d65a0459510b8b0f643b226a6d299e3206486e2b64ff20754a6d291707
+              env:
+                - name: MARIADB_ROOT_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: mariadb-secrets
+                      key: MARIADB_ROOT_PASSWORD
+              command:
+                - sh
+                - -c
+                - |
+                  set -euo pipefail
+                  STAMP=$(date +%F-%H%M)
+                  mariadb-dump \
+                    -h mariadb.mariadb.svc.cluster.local \
+                    -uroot -p"$MARIADB_ROOT_PASSWORD" \
+                    --all-databases \
+                    --single-transaction \
+                    --routines --triggers --events \
+                    --default-character-set=utf8mb4 \
+                  | gzip > "/backups/all-databases-${STAMP}.sql.gz"
+                  find /backups -name '*.sql.gz' -mtime +14 -delete
+                  ls -lh /backups
+              volumeMounts:
+                - name: data
+                  mountPath: /backups
+                  subPath: backups
+          volumes:
+            - name: data
+              persistentVolumeClaim:
+                claimName: mariadb-data-pvc

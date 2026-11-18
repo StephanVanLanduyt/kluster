@@ -20,3 +20,4 @@ resources:
   - apps/homepage
   - apps/monitor
   - apps/immich
+  - apps/mariadb

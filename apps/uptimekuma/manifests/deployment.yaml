@@ -18,6 +18,21 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: newton
       terminationGracePeriodSeconds: 120
+      initContainers:
+        - name: wait-for-mariadb
+          image: mariadb:11.8.9@sha256:d36f18d65a0459510b8b0f643b226a6d299e3206486e2b64ff20754a6d291707
+          command:
+            - sh
+            - -c
+            - |
+              until mariadb-admin ping \
+                    -h mariadb.mariadb.svc.cluster.local \
+                    -P 3306 --silent; do
+                echo "waiting for mariadb..."
+                sleep 3
+              done
+              echo "mariadb is up"
+
       containers:
         - name: uptime-kuma
           image: louislam/uptime-kuma:2.5.12@sha256:8e4b6bef96417ec98a35dc103c99cc64fc229a01e584e56d95d9004d2003c02a
@@ -28,6 +43,21 @@ spec:
           env:
             - name: TZ
               value: "Europe/Rome"
+            - name: UPTIME_KUMA_DB_TYPE
+              value: "mariadb"
+            - name: UPTIME_KUMA_DB_HOSTNAME
+              value: "mariadb.mariadb.svc.cluster.local"
+            - name: UPTIME_KUMA_DB_PORT
+              value: "3306"
+            - name: UPTIME_KUMA_DB_NAME
+              value: "kuma"
+            - name: UPTIME_KUMA_DB_USERNAME
+              value: "kuma"
+            - name: UPTIME_KUMA_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: uptime-kuma-secrets
+                  key: UPTIME_KUMA_DB_PASSWORD
           resources:
             limits:
               cpu: 500m
@@ -45,6 +75,13 @@ spec:
                   - /bin/sh
                   - -c
                   - sleep 20
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+            failureThreshold: 60
+            timeoutSeconds: 5
           readinessProbe:
             httpGet:
               path: /

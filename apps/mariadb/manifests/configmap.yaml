@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mariadb-initdb
+  namespace: mariadb
+data:
+  create-databases.sh: |
+    #!/bin/bash
+    set -euo pipefail
+
+    mariadb -uroot -p"${MARIADB_ROOT_PASSWORD}" <<-EOSQL
+      CREATE DATABASE IF NOT EXISTS kuma
+        CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
+      CREATE USER IF NOT EXISTS 'kuma'@'%'
+        IDENTIFIED BY '${KUMA_DB_PASSWORD}';
+
+      GRANT ALL PRIVILEGES ON kuma.* TO 'kuma'@'%';
+
+      FLUSH PRIVILEGES;
+    EOSQL
