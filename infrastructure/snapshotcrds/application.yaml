@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: snapshot-crds
+  namespace: argocd
+  annotations:
+    # Must sort before the volsync Application (-1).
+    argocd.argoproj.io/sync-wave: "-2"
+spec:
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  source:
+    repoURL: https://github.com/kubernetes-csi/external-snapshotter.git
+    targetRevision: v8.7.0
+    path: client/config/crd
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+      - CreateNamespace=false

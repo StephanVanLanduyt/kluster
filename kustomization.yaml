@@ -21,3 +21,5 @@ resources:
   - apps/monitor
   - apps/immich
   - apps/mariadb
+  - infrastructure/volsync
+  - infrastructure/snapshotcrds

@@ -9,5 +9,5 @@ resources:
   - deployment.yaml
   - service.yaml
   - ingress.yaml
-  - sftp-sealed-secrets.yaml
+  - volsync-sealed-secrets.yaml
   - replication-source.yaml
