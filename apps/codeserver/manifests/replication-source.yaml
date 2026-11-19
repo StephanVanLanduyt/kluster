@@ -1,0 +1,27 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: codeserver-appdata-backup
+  namespace: codeserver
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  sourcePVC: codeserver-appdata-pvc
+  trigger:
+    schedule: "0 6 * * *"
+  restic:
+    repository: volsync-codeserver
+    copyMethod: Direct
+    moverSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+    pruneIntervalDays: 28
+    retain:
+      hourly: 0
+      daily: 7
+      weekly: 4
+      monthly: 12
+      yearly: 0
+    exclude:
+      caches: true
