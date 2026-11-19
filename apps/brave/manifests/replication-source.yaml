@@ -1,0 +1,29 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: brave-appdata-backup
+  namespace: brave
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  sourcePVC: brave-appdata-pvc
+
+  trigger:
+    schedule: "0 0/6 * * *"
+
+  restic:
+    repository: volsync-brave
+    copyMethod: Direct
+    moverSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+    pruneIntervalDays: 28
+    retain:
+      hourly: 0
+      daily: 7
+      weekly: 4
+      monthly: 12
+      yearly: 0
+    exclude:
+      caches: true
