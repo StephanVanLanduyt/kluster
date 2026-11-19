@@ -1,0 +1,38 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: nodered-data
+  namespace: nodered
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  sourcePVC: nodered-data-pvc
+
+  trigger:
+    schedule: "0 0/6 * * *"
+
+  restic:
+    repository: volsync-sftp-nodered
+
+    # local-path does not normally provide CSI volume snapshots.
+    # Direct causes VolSync to copy the live PVC contents directly.
+    copyMethod: Direct
+
+    # The source PV is local storage on Newton. Explicitly constrain the
+    # mover to Newton so that it can mount the local-path volume.
+    moverNodeSelector:
+      kubernetes.io/hostname: newton
+
+    retain:
+      hourly: 0
+      daily: 7
+      weekly: 4
+      monthly: 12
+      yearly: 0
+
+    # Run repository pruning periodically. The backup itself still runs
+    # every six hours according to the trigger above.
+    pruneIntervalDays: 28
+
+    exclude:
+      caches: true

@@ -1,0 +1,82 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: volsync
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  project: default
+  source:
+    repoURL: https://backube.github.io/volsync/
+    chart: volsync
+    targetRevision: 0.16.0
+    helm:
+      valuesObject:
+        replicaCount: 1
+
+        image:
+          repository: quay.io/backube/volsync
+          pullPolicy: IfNotPresent
+          tag: ""
+
+        rclone:
+        restic:
+        rsync:
+        rsync-tls:
+        syncthing:
+
+        # Install the VolSync CRDs with the chart.
+        manageCRDs: true
+
+        metrics:
+          disableAuth: false
+
+        imagePullSecrets: []
+        nameOverride: ""
+        fullnameOverride: ""
+
+        serviceAccount:
+          create: true
+          annotations: {}
+          name: ""
+
+        service:
+          ipFamilyPolicy: ""
+          ipFamilies: []
+
+        podAnnotations: {}
+        podLabels: {}
+
+        podSecurityContext: {}
+
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: true
+
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+          requests:
+            cpu: 100m
+            memory: 64Mi
+
+        nodeSelector: {}
+
+        tolerations: []
+
+        affinity: {}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: volsync
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
