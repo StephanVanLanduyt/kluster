@@ -1,4 +1,4 @@
-FROM lscr.io/linuxserver/code-server:4.145.2@sha256:20ffca4512fcfc85dcd5612fb769233c1553192392d2ec417f0859135805f40c
+FROM lscr.io/linuxserver/code-server:4.146.0@sha256:027b1da4cece4b7ae987aad0fbc50955d8c66f48583b55fe51e3385576be8cf1
 
 # Define tool versions
 ARG SOPS_VERSION=v3.9.4
