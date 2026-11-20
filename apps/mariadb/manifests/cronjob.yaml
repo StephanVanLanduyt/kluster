@@ -28,11 +28,12 @@ spec:
                       name: mariadb-secrets
                       key: MARIADB_ROOT_PASSWORD
               command:
-                - sh
+                - /bin/bash
                 - -c
                 - |
                   set -euo pipefail
                   STAMP=$(date +%F-%H%M)
+                  OUT="/backups/all-databases-${STAMP}.sql.gz"
                   mariadb-dump \
                     -h mariadb.mariadb.svc.cluster.local \
                     -uroot -p"$MARIADB_ROOT_PASSWORD" \
@@ -40,7 +41,7 @@ spec:
                     --single-transaction \
                     --routines --triggers --events \
                     --default-character-set=utf8mb4 \
-                  | gzip > "/backups/all-databases-${STAMP}.sql.gz"
+                  | gzip > "$OUT"
                   find /backups -name '*.sql.gz' -mtime +14 -delete
                   ls -lh /backups
               volumeMounts:
