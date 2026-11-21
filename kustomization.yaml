@@ -23,3 +23,4 @@ resources:
   - apps/mariadb
   - infrastructure/volsync
   - infrastructure/snapshotcrds
+  - apps/garage
