@@ -65,6 +65,16 @@ spec:
                 secretKeyRef:
                   name: postgres-secrets
                   key: YAMTRACK_DB_PASSWORD
+            - name: COCKTAILS_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: COCKTAILS_DB_USER
+            - name: COCKTAILS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: COCKTAILS_DB_PASSWORD
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql/data

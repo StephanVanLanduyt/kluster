@@ -6,4 +6,4 @@ metadata:
   namespace: cocktails
 data:
   POSTGRES_DB: "cocktails"
-  POSTGRES_USER: "postgres"
+  POSTGRES_USER: "cocktails"

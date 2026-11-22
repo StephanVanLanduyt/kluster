@@ -13,7 +13,11 @@ data:
     psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname postgres <<-EOSQL
         CREATE ROLE "${YAMTRACK_DB_USER}" WITH LOGIN PASSWORD '${YAMTRACK_DB_PASSWORD}';
         CREATE DATABASE yamtrack OWNER "${YAMTRACK_DB_USER}" ENCODING 'UTF8';
-        -- Tenant isolation: no other role may even connect to this database.
         REVOKE ALL ON DATABASE yamtrack FROM PUBLIC;
         GRANT CONNECT ON DATABASE yamtrack TO "${YAMTRACK_DB_USER}";
+
+        CREATE ROLE "${COCKTAILS_DB_USER}" WITH LOGIN PASSWORD '${COCKTAILS_DB_PASSWORD}';
+        CREATE DATABASE cocktails OWNER "${COCKTAILS_DB_USER}" ENCODING 'UTF8' TEMPLATE template0;
+        REVOKE ALL ON DATABASE cocktails FROM PUBLIC;
+        GRANT CONNECT ON DATABASE cocktails TO "${COCKTAILS_DB_USER}";
     EOSQL

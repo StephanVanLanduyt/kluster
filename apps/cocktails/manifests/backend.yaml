@@ -43,4 +43,4 @@ spec:
                   name: cocktails-secrets
                   key: POSTGRES_PASSWORD
             - name: PG_DSN
-              value: postgresql+psycopg2://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@cocktails-db:5432/$(POSTGRES_DB)
+              value: postgresql+psycopg2://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres.postgres.svc.cluster.local:5432/$(POSTGRES_DB)
