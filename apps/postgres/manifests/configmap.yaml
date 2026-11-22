@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-initdb
+  namespace: postgres
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+data:
+  create-databases.sh: |
+    #!/bin/bash
+    set -euo pipefail
+
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname postgres <<-EOSQL
+        CREATE ROLE "${YAMTRACK_DB_USER}" WITH LOGIN PASSWORD '${YAMTRACK_DB_PASSWORD}';
+        CREATE DATABASE yamtrack OWNER "${YAMTRACK_DB_USER}" ENCODING 'UTF8';
+        -- Tenant isolation: no other role may even connect to this database.
+        REVOKE ALL ON DATABASE yamtrack FROM PUBLIC;
+        GRANT CONNECT ON DATABASE yamtrack TO "${YAMTRACK_DB_USER}";
+    EOSQL

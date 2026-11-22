@@ -24,3 +24,4 @@ resources:
   - infrastructure/volsync
   - infrastructure/snapshotcrds
   - apps/garage
+  - apps/postgres
