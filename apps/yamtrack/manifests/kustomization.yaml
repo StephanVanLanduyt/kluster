@@ -9,7 +9,6 @@ resources:
   - redis-pvc.yaml
   - redis-deployment.yaml
   - redis-svc.yaml
-  - yamtrack-pvc.yaml
   - yamtrack-deployment.yaml
   - yamtrack-svc.yaml
   - ingress.yaml

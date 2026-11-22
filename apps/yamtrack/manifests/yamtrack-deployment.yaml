@@ -30,10 +30,13 @@ spec:
                 secretKeyRef:
                   name: yamtrack-secrets
                   key: SECRET
-          volumeMounts:
-            - name: db-storage
-              mountPath: /yamtrack/db
-      volumes:
-        - name: db-storage
-          persistentVolumeClaim:
-            claimName: yamtrack-data-pvc
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: yamtrack-secrets
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: yamtrack-secrets
+                  key: DB_PASSWORD

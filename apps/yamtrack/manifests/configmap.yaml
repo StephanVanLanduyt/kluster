@@ -8,3 +8,6 @@ data:
   REDIS_URL: "redis://yamtrack-redis-svc:6379"
   URLS: "http://yamtrack.newton.local"
   REGISTRATION: "false"
+  DB_HOST: "postgres.postgres.svc.cluster.local"
+  DB_PORT: "5432"
+  DB_NAME: "yamtrack"
