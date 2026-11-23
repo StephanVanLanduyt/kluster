@@ -9,7 +9,8 @@
   "prHourlyLimit": 0,
   "kubernetes": {
     "managerFilePatterns": [
-      "/(^|/).*deployment\\.yaml$/"
+      "/(^|/).*deployment\\.yaml$/",
+      "/(^|/).*statefulset\\.yaml$/"
     ]
   },
   "argocd": {
