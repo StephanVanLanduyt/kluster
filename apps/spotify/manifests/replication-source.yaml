@@ -1,0 +1,25 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: spotify-data-backup
+  namespace: spotify
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  sourcePVC: app-data-pvc
+
+  trigger:
+    schedule: "30 23 * * 0"
+
+  restic:
+    repository: volsync-spotify
+    copyMethod: Direct
+    pruneIntervalDays: 28
+    retain:
+      hourly: 0
+      daily: 7
+      weekly: 4
+      monthly: 12
+      yearly: 0
+    exclude:
+      caches: true
