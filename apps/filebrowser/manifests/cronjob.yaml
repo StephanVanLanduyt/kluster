@@ -39,6 +39,11 @@ spec:
             - name: sqlite-backup
               image: alpine:3.20
               imagePullPolicy: IfNotPresent
+              securityContext:
+                runAsUser: 0
+                runAsGroup: 0
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: false
               env:
                 - name: DB_FILE
                   value: /database/filebrowser.sqlite
@@ -84,12 +89,14 @@ spec:
                     exit 1
                   fi
 
-                  chmod 0600 "$TEMP_BACKUP"
+                  chmod 0644 "$TEMP_BACKUP"
+                  chown 1000:1000 "$TEMP_BACKUP"
 
                   # Atomic publication: VolSync will see either the old
                   # complete backup or the new complete backup, never a
                   # partially-written final file.
                   mv -f "$TEMP_BACKUP" "$FINAL_BACKUP"
+                  chown 1000:1000 "$BACKUP_DIR" "$FINAL_BACKUP"
 
                   echo "Backup completed:"
                   ls -lh "$FINAL_BACKUP"
