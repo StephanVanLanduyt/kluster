@@ -1,0 +1,105 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: filebrowser-database-backup
+  namespace: filebrowser
+  labels:
+    app.kubernetes.io/name: filebrowser-database-backup
+    app.kubernetes.io/component: backup
+spec:
+  schedule: "15 2 * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 3600
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    metadata:
+      labels:
+        app.kubernetes.io/name: filebrowser-database-backup
+        app.kubernetes.io/component: backup
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 86400
+
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: filebrowser-database-backup
+            app.kubernetes.io/component: backup
+        spec:
+          restartPolicy: OnFailure
+          nodeSelector:
+            kubernetes.io/hostname: newton
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+          containers:
+            - name: sqlite-backup
+              image: alpine:3.20
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: DB_FILE
+                  value: /database/filebrowser.sqlite
+                - name: BACKUP_DIR
+                  value: /database/backups
+                - name: TEMP_BACKUP
+                  value: "$(BACKUP_DIR)/filebrowser.sqlite.backup.tmp"
+                - name: FINAL_BACKUP
+                  value: "$(BACKUP_DIR)/filebrowser.sqlite.backup"
+              command:
+                - /bin/sh
+                - -ec
+                - |
+                  apk add --no-cache sqlite
+
+                  if [ ! -f "$DB_FILE" ]; then
+                    echo "ERROR: SQLite database does not exist: $DB_FILE"
+                    echo "Available database files:"
+                    find /appdata/database -maxdepth 2 -type f -print || true
+                    exit 1
+                  fi
+
+                  mkdir -p "$BACKUP_DIR"
+                  rm -f "$TEMP_BACKUP"
+
+                  echo "Creating consistent SQLite backup"
+
+                  sqlite3 "$DB_FILE" \
+                    ".timeout 30000" \
+                    ".backup '$TEMP_BACKUP'"
+
+                  echo "Checking backup integrity"
+
+                  result="$(
+                    sqlite3 "$TEMP_BACKUP" \
+                      "PRAGMA integrity_check;"
+                  )"
+
+                  if [ "$result" != "ok" ]; then
+                    echo "ERROR: SQLite integrity check failed:"
+                    echo "$result"
+                    rm -f "$TEMP_BACKUP"
+                    exit 1
+                  fi
+
+                  chmod 0600 "$TEMP_BACKUP"
+
+                  # Atomic publication: VolSync will see either the old
+                  # complete backup or the new complete backup, never a
+                  # partially-written final file.
+                  mv -f "$TEMP_BACKUP" "$FINAL_BACKUP"
+
+                  echo "Backup completed:"
+                  ls -lh "$FINAL_BACKUP"
+
+              volumeMounts:
+                - name: appdata
+                  mountPath: /database
+                  subPath: database
+
+          volumes:
+            - name: appdata
+              persistentVolumeClaim:
+                claimName: filebrowser-appdata-pvc
