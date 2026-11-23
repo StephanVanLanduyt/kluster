@@ -75,6 +75,16 @@ spec:
                 secretKeyRef:
                   name: postgres-secrets
                   key: COCKTAILS_DB_PASSWORD
+            - name: GOTIFY_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: GOTIFY_DB_USER
+            - name: GOTIFY_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: GOTIFY_DB_PASSWORD
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql/data

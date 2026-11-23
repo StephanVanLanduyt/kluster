@@ -35,6 +35,11 @@ spec:
                 secretKeyRef:
                   name: gotify-secrets
                   key: GOTIFY_DEFAULTUSER_PASS
+            - name: GOTIFY_DATABASE_CONNECTION
+              valueFrom:
+                secretKeyRef:
+                  name: gotify-secrets
+                  key: GOTIFY_DATABASE_CONNECTION
           volumeMounts:
             - name: gotify-data
               mountPath: /app/data
