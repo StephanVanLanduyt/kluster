@@ -1,0 +1,29 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: trilium-data-backup
+  namespace: trilium
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  sourcePVC: trilium-data-pvc
+
+  trigger:
+    schedule: "15 3 * * *"
+
+  restic:
+    repository: volsync-trilium
+    copyMethod: Direct
+    moverSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+    pruneIntervalDays: 28
+    retain:
+      hourly: 0
+      daily: 7
+      weekly: 4
+      monthly: 12
+      yearly: 0
+    exclude:
+      caches: true
