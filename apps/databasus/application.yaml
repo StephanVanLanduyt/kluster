@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: ghcr.io/databasus/charts
     chart: databasus
-    targetRevision: 3.72.0
+    targetRevision: 3.73.1
     helm:
       releaseName: databasus
       values: |
